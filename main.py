@@ -6,16 +6,11 @@ from coingecko import CoinGeckoAPI
 app = FastAPI()
 api = CoinGeckoAPI()
 
-# ----------------------
-# Authentication Models
-# ----------------------
 class LoginRequest(BaseModel):
     username: str
     password: str
 
-# ----------------------
-# Authentication Endpoint
-# ----------------------
+
 @app.post("/auth/login")
 def login(data: LoginRequest):
     if not authenticate_user(data.username, data.password):
@@ -25,9 +20,7 @@ def login(data: LoginRequest):
     return {"access_token": token, "token_type": "bearer"}
 
 
-# ----------------------
-# Protected Endpoints
-# ----------------------
+
 @app.get("/coins")
 def list_coins(page_num: int = 1, per_page: int = 10, user=Depends(verify_token)):
     coins = api.list_coins()
@@ -51,7 +44,6 @@ def market_data(
 ):
     data = api.get_market_data(coin_id, category)
 
-    # pagination applied to both INR and CAD results
     for curr in ["inr", "cad"]:
         items = data[curr]
         start = (page_num - 1) * per_page
